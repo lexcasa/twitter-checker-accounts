@@ -1,5 +1,7 @@
 // super fast browser - like it :)
 require('dotenv').config()
+// Add limit event listeners
+require('events').EventEmitter.prototype._maxListeners = 1000;
 const fs        = require('fs')
 const readline  = require('readline');
 

@@ -51,13 +51,13 @@ const Helper = {
             const page = await browser.newPage();
             // open twitter
             await page.goto(TWT_LOGIN, {waitUntil: 'networkidle2'})
-            await this.delay(500)
+            await this.delay(1000)
             // Focus and fast send characters - username
             await page.focus(USR_TAG)
             await page.keyboard.sendCharacter(usr.userName)
             // Next step of flow
             await page.click(NEXT_TAG)
-            await this.delay(500)
+            await this.delay(1000)
             // Focus and fast send characters - password
             await page.focus(PSW_TAG)
             await page.keyboard.sendCharacter(usr.password)

@@ -16,8 +16,8 @@ const NEXT_TAG       = process.env.NEXT_TAG
 const PSW_TAG        = process.env.PSW_TAG
 const LGN_TAG        = process.env.LGN_TAG
 const OUT_FILE       = process.env.OUT_FILE
-const FAIL_FILE      = process.env.FAIL_FILE;
-const DELAY_TIME     = 5000
+const FAIL_FILE      = process.env.FAIL_FILE
+const DELAY_TIME     = process.env.DELAY_TIME;
 
 const Helper = {
     delay: function (time) {

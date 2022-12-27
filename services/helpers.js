@@ -77,8 +77,6 @@ const Helper = {
             }
             // To-Do add verified accounts check
             console.log("url type :: ", url)
-            // Close browser - we do not waste our ram
-            await browser.close();
             // Each line in input.txt will be successively available here as `line`.
         } catch (e){
             errorTail += `Error: ${e} \n`
@@ -87,6 +85,9 @@ const Helper = {
         const end = new Date()
         console.log()
 
+        // Close browser - we do not waste our ram
+        await browser.close();
+        
         return new Promise(resolve => {
             setTimeout(() => {
                 resolve({

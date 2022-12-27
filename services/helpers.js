@@ -39,14 +39,15 @@ const Helper = {
         usr.userName = spl[0]
         usr.password = spl[1]
 
+        // open our lovely browser
+        const browser = await puppeteer.launch({
+            headless: true,
+            slowMo: 250,
+            args: [USE_PROXY ? `--proxy-server=http=${USE_PROXY}` : '', '--no-sandbox', '--disable-setuid-sandbox'],
+            executablePath: executablePath()
+        });
+
         try {
-            // open our lovely browser
-            const browser = await puppeteer.launch({
-                headless: true,
-                slowMo: 250,
-                args: [USE_PROXY ? `--proxy-server=http=${USE_PROXY}` : '', '--no-sandbox', '--disable-setuid-sandbox'],
-                executablePath: executablePath()
-            });
             
             const page = await browser.newPage();
             // open twitter
@@ -87,7 +88,7 @@ const Helper = {
 
         // Close browser - we do not waste our ram
         await browser.close();
-        
+
         return new Promise(resolve => {
             setTimeout(() => {
                 resolve({

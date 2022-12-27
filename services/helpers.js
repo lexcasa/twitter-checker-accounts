@@ -44,7 +44,7 @@ const Helper = {
             const browser = await puppeteer.launch({
                 headless: true,
                 slowMo: 250,
-                args: [USE_PROXY ? `--proxy-server=${USE_PROXY}` : ''],
+                args: [USE_PROXY ? `--proxy-server=http=${USE_PROXY}` : '', '--no-sandbox', '--disable-setuid-sandbox'],
                 executablePath: executablePath()
             });
             

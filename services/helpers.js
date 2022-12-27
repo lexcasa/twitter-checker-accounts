@@ -17,6 +17,7 @@ const PSW_TAG        = process.env.PSW_TAG
 const LGN_TAG        = process.env.LGN_TAG
 const OUT_FILE       = process.env.OUT_FILE
 const FAIL_FILE      = process.env.FAIL_FILE;
+const DELAY_TIME     = 5000
 
 const Helper = {
     delay: function (time) {
@@ -52,20 +53,20 @@ const Helper = {
             const page = await browser.newPage();
             // open twitter
             await page.goto(TWT_LOGIN, {waitUntil: 'networkidle2'})
-            await this.delay(1000)
+            await this.delay(DELAY_TIME)
             // Focus and fast send characters - username
             await page.focus(USR_TAG)
             await page.keyboard.sendCharacter(usr.userName)
             // Next step of flow
             await page.click(NEXT_TAG)
-            await this.delay(1000)
+            await this.delay(DELAY_TIME)
             // Focus and fast send characters - password
             await page.focus(PSW_TAG)
             await page.keyboard.sendCharacter(usr.password)
-            await this.delay(1000)
+            await this.delay(DELAY_TIME)
             // Login action
             await page.click(LGN_TAG)
-            await this.delay(5000)
+            await this.delay(DELAY_TIME)
             // Check url if it's OK or not
             const url = await page.evaluate(() => document.location.href);
             // Success

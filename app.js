@@ -23,12 +23,12 @@ async function main () {
     // To-Do: move hardcode text to constants
     const initDate = new Date();
     // Backup
-    shell.exec(`cp -R fail.txt backup/fail_${initDate}_.txt`)
-    shell.exec(`cp -R hits.txt backup/hits_${initDate}_.txt`)
+    shell.exec('cp -R fail.txt '+'backup/fail_'+initDate+'_.txt')
+    shell.exec('cp -R hits.txt '+'backup/hits_'+initDate+'_.txt')
 
     // Remove / create
-    shell.exec(`rm -rf fail.txt hits.txt`)
-    shell.exec(`touch fail.txt hits.txt`)
+    shell.exec('rm -rf fail.txt hits.txt')
+    shell.exec('touch fail.txt hits.txt');
 
     // Process lines
     const fileStream = fs.createReadStream(IN_FILE);

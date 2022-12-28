@@ -21,7 +21,7 @@ async function main () {
     console.time('main')
     // When starts backup files and start again
     // To-Do: move hardcode text to constants
-    const initDate = new Date();
+    const initDate = (new Date()).toISOString();
     // Backup
     shell.exec('cp -R fail.txt '+'backup/fail_'+initDate+'_.txt')
     shell.exec('cp -R hits.txt '+'backup/hits_'+initDate+'_.txt')

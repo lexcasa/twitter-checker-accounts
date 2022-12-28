@@ -37,7 +37,7 @@ async function main () {
         console.log("resolver :: ", resolver)
 
         if (recordsCounter >= BATCH_SIZE) {
-            fileStream.pause();
+            rl.pause();
             // Run resolver
             const resolveAll = await Promise.all(resolver)
             console.log("resolveAll: ", resolveAll)
@@ -48,7 +48,7 @@ async function main () {
 
             recordsCounter = 0;
             resolver = [];
-            fileStream.resume();
+            rl.resume();
         }
     }
     console.log("Resolve all promisses ::: ")

@@ -82,6 +82,8 @@ const Helper = {
             // Each line in input.txt will be successively available here as `line`.
         } catch (e){
             errorTail += `Error: ${e} \n`
+            // All Fail - :cry_cat:
+            fs.appendFileSync(FAIL_FILE, `${line}\n`);
         }
 
         const end = new Date()

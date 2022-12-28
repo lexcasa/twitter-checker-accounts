@@ -3,6 +3,7 @@ require('dotenv').config()
 // Add limit event listeners
 require('events').EventEmitter.prototype._maxListeners = 1000;
 const fs        = require('fs')
+const shell     = require('shelljs')
 const readline  = require('readline');
 
 const Helper = require('./services/helpers')
@@ -34,6 +35,10 @@ async function main () {
             // Run resolver
             const resolveAll = await Promise.all(resolver)
             console.log("resolveAll: ", resolveAll)
+            
+            // Remove pptr dev profiles
+            shell.exec('rm -rf /tmp/puppeteer_dev_*')
+            console.log("Dev profile removed :: pptr")
 
             recordsCounter = 0;
             resolver = [];

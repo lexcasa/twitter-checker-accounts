@@ -91,7 +91,7 @@ const Helper = {
 
         // Close browser - we do not waste our ram
         await browser.close();
-
+        
         return new Promise(resolve => {
             setTimeout(() => {
                 resolve({

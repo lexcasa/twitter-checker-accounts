@@ -27,7 +27,7 @@ const Helper = {
     },
     processLine: async function (line, lap){
         lap++
-        console.log(`resolver start function - ${lap}`)
+        
         const start = new Date();
         let errorTail = ``
 
@@ -39,6 +39,8 @@ const Helper = {
 
         usr.userName = spl[0]
         usr.password = spl[1]
+        
+        console.log(`Resolver start function - Account: ${usr.userName}`)
 
         // open our lovely browser
         const browser = await puppeteer.launch({
@@ -72,18 +74,18 @@ const Helper = {
             // Success
             if(url == TWT_HOME || url == TWT_CHALLENGE){
                 // Save hit
-                fs.appendFileSync(OUT_FILE, `${line}\n`);
+                fs.appendFileSync(OUT_FILE, `${line}:${usr.userName}\n`);
             } else if (url == TWT_LOGIN){
                 // Fail accounts
-                fs.appendFileSync(FAIL_FILE, `${line}\n`);
+                fs.appendFileSync(FAIL_FILE, `${line}:${usr.userName}\n`);
             }
             // To-Do add verified accounts check
-            console.log("url type :: ", url)
+            console.log(`Account: ${usr.userName} - Checked success`)
             // Each line in input.txt will be successively available here as `line`.
         } catch (e){
-            errorTail += `Error: ${e} \n`
+            errorTail += `Error: ${e} - In account: ${usr.userName}\n`
             // All Fail - :cry_cat:
-            fs.appendFileSync(FAIL_FILE, `${line}\n`);
+            fs.appendFileSync(FAIL_FILE, `${line}:${usr.userName}\n`);
         }
 
         const end = new Date()
@@ -95,7 +97,7 @@ const Helper = {
         return new Promise(resolve => {
             setTimeout(() => {
                 resolve({
-                    end: `Lap ${lap} :: time estimated finish ${end - start} ms`,
+                    end: `Lap time estimated finish ${end - start} ms`,
                     tail: errorTail
                 })
             }, 10)

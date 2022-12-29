@@ -23,12 +23,15 @@ async function main () {
     // To-Do: move hardcode text to constants
     const initDate = (new Date()).toISOString();
     // Backup
-    shell.exec('cp -R fail.txt '+'backup/fail_'+initDate+'_.txt')
-    shell.exec('cp -R hits.txt '+'backup/hits_'+initDate+'_.txt')
+    shell.exec(`cp -R fail.txt backup/fail_${initDate}_.txt`)
+    shell.exec(`cp -R hits.txt backup/hits_${initDate}_.txt`)
 
     // Remove / create
     shell.exec('rm -rf fail.txt hits.txt')
     shell.exec('touch fail.txt hits.txt');
+
+    const rawTotalLines = shell.exec('echo $(wc -l < combos.txt)')
+    const totalLines    = parseInt( rawTotalLines.stdout.match(/\d+/)[0] ) + 1
 
     // Process lines
     const fileStream = fs.createReadStream(IN_FILE);
@@ -40,19 +43,21 @@ async function main () {
 
     let lap = 0
     let recordsCounter = 0
+    let totalCounter   = 0
+    let progressBar    = 1
     let resolver = []
     for await (const line of rl) {
         recordsCounter += 1
+        totalCounter   += 1
         // Array of promisses
         resolver.push(Helper.processLine(line, lap))
-        console.log("resolver :: ", resolver)
+        // console.log("resolver :: ", resolver)
 
         if (recordsCounter >= BATCH_SIZE) {
             rl.pause();
             // Run resolver
-            const resolveAll = await Promise.all(resolver)
-            console.log("resolveAll: ", resolveAll)
-
+            await Promise.all(resolver)
+            
             // Remove pptr dev profiles
             shell.exec('rm -rf /tmp/puppeteer_dev_*')
             console.log("Dev profile removed :: pptr")
@@ -61,6 +66,8 @@ async function main () {
             resolver = [];
             rl.resume();
         }
+        progressBar = (totalCounter/totalLines) * 100
+        console.log(`Total resolved :: ${totalCounter} of ${totalLines} - Completed %${progressBar}`)
     }
     console.log("Resolve all promisses ::: ")
     console.timeEnd('main')

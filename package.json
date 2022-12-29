@@ -11,6 +11,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "node-cron": "^3.0.2",
+    "piscina": "^3.2.0",
     "puppeteer": "^19.4.1",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-stealth": "^2.11.1",

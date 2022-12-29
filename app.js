@@ -10,9 +10,17 @@ try {
 
 const fs        = require('fs')
 const shell     = require('shelljs')
+const path      = require('path')
+const Piscina   = require('piscina')
 const readline  = require('readline');
 
-const Helper = require('./services/helpers')
+const piscina = new Piscina({
+    filename: path.resolve(__dirname, 'services/helpers.js')
+});
+
+// console.log("Helper: ", Helper)
+
+const {processLine}     = require('./services/helpers')
 const IN_FILE           = process.env.IN_FILE
 const BATCH_SIZE        = process.env.BATCH_SIZE;
 
@@ -46,18 +54,21 @@ async function main () {
     let totalCounter   = 0
     let progressBar    = 1
     let resolver = []
+
     for await (const line of rl) {
         recordsCounter += 1
         totalCounter   += 1
         // Array of promisses
-        resolver.push(Helper.processLine(line, lap))
+        resolver.push(
+            piscina.run({line: line, lap: lap}, { name: 'processLine' })
+        )
         // console.log("resolver :: ", resolver)
 
         if (recordsCounter >= BATCH_SIZE) {
             rl.pause();
             // Run resolver
             await Promise.all(resolver)
-            
+
             // Remove pptr dev profiles
             shell.exec('rm -rf /tmp/puppeteer_dev_*')
             console.log("Dev profile removed :: pptr")

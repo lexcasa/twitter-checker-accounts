@@ -46,13 +46,63 @@ exports.processLine = async function ({line, lap}){
     const browser = await puppeteer.launch({
         headless: true,
         slowMo: 250,
-        args: [USE_PROXY ? `--proxy-server=http=${USE_PROXY}` : '', '--no-sandbox', '--disable-setuid-sandbox'],
+        args: [USE_PROXY ? `--proxy-server=http=${USE_PROXY}` : '',
+                '--autoplay-policy=user-gesture-required',
+                '--disable-background-networking',
+                '--disable-background-timer-throttling',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-breakpad',
+                '--disable-client-side-phishing-detection',
+                '--disable-component-update',
+                '--disable-default-apps',
+                '--disable-dev-shm-usage',
+                '--disable-domain-reliability',
+                '--disable-extensions',
+                '--disable-features=AudioServiceOutOfProcess',
+                '--disable-hang-monitor',
+                '--disable-ipc-flooding-protection',
+                '--disable-notifications',
+                '--disable-offer-store-unmasked-wallet-cards',
+                '--disable-popup-blocking',
+                '--disable-print-preview',
+                '--disable-prompt-on-repost',
+                '--disable-renderer-backgrounding',
+                '--disable-setuid-sandbox',
+                '--disable-speech-api',
+                '--disable-sync',
+                '--hide-scrollbars',
+                '--ignore-gpu-blacklist',
+                '--metrics-recording-only',
+                '--mute-audio',
+                '--no-default-browser-check',
+                '--no-first-run',
+                '--no-pings',
+                '--no-sandbox',
+                '--no-zygote',
+                '--password-store=basic',
+                '--use-gl=swiftshader',
+                '--use-mock-keychain'
+        ],
         executablePath: executablePath()
     });
 
     try {
         
         const page = await browser.newPage();
+        await page.setViewport({ width: 1024, height: 800 });
+        await page.setRequestInterception(true);
+        await page.setUserAgent('Opera/9.80 (Android; Opera Mini/40.1.2254/191.273; U; ru) Presto/2.12.423 Version/12.16');
+
+        // Remove inecesary data
+        page.on('request', (req) => {
+            if(req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image'){
+                req.abort();
+            }
+            else {
+                req.continue();
+            }
+        });
+
         // open twitter
         await page.goto(TWT_LOGIN, {waitUntil: 'networkidle2'})
         await delay(DELAY_TIME)

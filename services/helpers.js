@@ -140,6 +140,7 @@ exports.processLine = async function ({line, lap}){
         // Each line in input.txt will be successively available here as `line`.
     } catch (e){
         errorTail += `Error: ${e} - In account: ${usr.userName}\n`
+        console.log("errorTail: ", errorTail)
         // All Fail - :cry_cat:
         fs.appendFileSync(FAIL_FILE, `${line}:${usr.userName}\n`);
     }

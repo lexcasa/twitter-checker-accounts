@@ -127,12 +127,16 @@ exports.processLine = async function ({line, lap}){
         if(url == TWT_HOME || url == TWT_CHALLENGE){
             // Save hit
             fs.appendFileSync(OUT_FILE, `${line}:${usr.userName}\n`);
+            // To-Do add verified accounts check
+            console.log(`Account: ${usr.userName} - Checked success`)
+
         } else if (url == TWT_LOGIN){
             // Fail accounts
             fs.appendFileSync(FAIL_FILE, `${line}:${usr.userName}\n`);
+        } else {
+            console.log(`Account: ${usr.userName} - Checked error - ${url}`)
         }
-        // To-Do add verified accounts check
-        console.log(`Account: ${usr.userName} - Checked success`)
+        
         // Each line in input.txt will be successively available here as `line`.
     } catch (e){
         errorTail += `Error: ${e} - In account: ${usr.userName}\n`

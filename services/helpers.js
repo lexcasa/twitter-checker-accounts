@@ -44,7 +44,7 @@ exports.processLine = async function ({line, lap}){
 
     // open our lovely browser
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         slowMo: 250,
         args: [USE_PROXY ? `--proxy-server=http=${USE_PROXY}` : '',
                 '--autoplay-policy=user-gesture-required',

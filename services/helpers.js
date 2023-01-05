@@ -123,6 +123,9 @@ exports.processLine = async function ({line, lap}){
         await delay(DELAY_TIME)
         // Check url if it's OK or not
         const url = await page.evaluate(() => document.location.href);
+
+        console.log(`url: ${url} - Check url`)
+
         // Success
         if(url == TWT_HOME || url == TWT_CHALLENGE){
             // Save hit

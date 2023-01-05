@@ -56,6 +56,8 @@ exports.processLine = async function ({line, lap}){
                 '--disable-component-update',
                 '--disable-default-apps',
                 '--disable-dev-shm-usage',
+                '--fast-launch',
+                '--single-process',
                 '--disable-domain-reliability',
                 '--disable-extensions',
                 '--disable-features=AudioServiceOutOfProcess',
@@ -91,7 +93,7 @@ exports.processLine = async function ({line, lap}){
         const page = await browser.newPage();
         await page.setViewport({ width: 1024, height: 800 });
         await page.setRequestInterception(true);
-        await page.setUserAgent('Opera/9.80 (Android; Opera Mini/40.1.2254/191.273; U; ru) Presto/2.12.423 Version/12.16');
+        await page.setCacheEnabled(true);
 
         // Remove inecesary data
         page.on('request', (req) => {

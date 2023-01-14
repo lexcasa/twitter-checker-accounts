@@ -21,7 +21,9 @@ const piscina = new Piscina({
 // console.log("Helper: ", Helper)
 
 const {processLine}     = require('./services/helpers')
+const {delay}           = require('./services/utils')
 const IN_FILE           = process.env.IN_FILE
+const DELAY_TIME        = process.env.DELAY_TIME
 const BATCH_SIZE        = process.env.BATCH_SIZE;
 
 // Run async process
@@ -75,6 +77,9 @@ async function main () {
 
             recordsCounter = 0;
             resolver = [];
+
+            await delay(DELAY_TIME);
+            console.log("wait system to rest :: finish")
             rl.resume();
         }
         progressBar = (totalCounter/totalLines) * 100

@@ -20,11 +20,7 @@ const FAIL_FILE      = process.env.FAIL_FILE
 const DELAY_TIME     = process.env.DELAY_TIME
 const TWT_TASK_RUNNER= 'https://api.twitter.com/1.1/onboarding/task.json';
 
-function delay (time) {
-    return new Promise(function(resolve) { 
-        setTimeout(resolve, time)
-    });
-};
+const {delay} = require('./utils')
 
 exports.processLine = async function ({line, lap}){
     lap++

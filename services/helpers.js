@@ -180,6 +180,11 @@ exports.processLine = async function ({line, lap}){
         // open twitter
         await page.goto(TWT_LOGIN, {waitUntil: 'networkidle2'})
         await delay(DELAY_TIME)
+        // Wait for selector visible
+        await page.waitForSelector(USR_TAG, {
+            visible: true,
+        })
+
         // Focus and fast send characters - username
         await page.focus(USR_TAG)
         await page.keyboard.sendCharacter(usr.userName)

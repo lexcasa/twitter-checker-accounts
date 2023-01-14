@@ -178,17 +178,22 @@ exports.processLine = async function ({line, lap}){
         });
 
         // open twitter
-        await page.goto(TWT_LOGIN, {waitUntil: 'networkidle0'})
+        await page.goto(TWT_LOGIN, {waitUntil: 'networkidle2'})
+        console.log("GoTo login :: finish")
 
         await page.waitForNavigation({
-            waitUntil: 'networkidle0',
+            waitUntil: 'networkidle2',
         })
+
+        console.log("waitForNavigation :: finish")
 
         await delay(DELAY_TIME)
         // Wait for selector visible
         await page.waitForSelector(USR_TAG, {
             visible: true,
         })
+
+        console.log("waitForSelector :: finish")
 
         // Focus and fast send characters - username
         await page.focus(USR_TAG)

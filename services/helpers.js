@@ -112,6 +112,7 @@ exports.processLine = async function ({line, lap}){
             if(res.request().resourceType() === 'xhr'){
                 // Case: user doesn't exist
                 if(res.status() === 400 && res.url() == TWT_TASK_RUNNER){
+                    console.log("user does not exist :: finish :: ", usr.userName)
                     // Save in error file
                     fs.appendFileSync(FAIL_FILE, `${line}:${usr.userName}\n`);
 
@@ -139,6 +140,8 @@ exports.processLine = async function ({line, lap}){
                             let subtask = resJson.subtasks[0]
                             // Challenge check after enter password
                             if(subtask.subtask_id == "LoginEnterPassword" || subtask.subtask_id == "AccountDuplicationCheck" || subtask.subtask_id == "LoginEnterAlternateIdentifierSubtask"){
+                                console.log("user success √ :: finish :: ", usr.userName)
+
                                 // Save hit
                                 fs.appendFileSync(OUT_FILE, `${line}:${usr.userName}\n`);
 
@@ -158,6 +161,8 @@ exports.processLine = async function ({line, lap}){
                             }
                         }
                     } catch (e){
+                        console.log("user fail :: finish :: ", usr.userName, e)
+
                         // All Fail - :cry_cat:
                         fs.appendFileSync(FAIL_FILE, `${line}:${usr.userName}\n`);
 
@@ -187,18 +192,18 @@ exports.processLine = async function ({line, lap}){
             visible: true,
         })
 
-        console.log("waitForSelector :: finish")
+        console.log("waitForSelector :: finish :: ", usr.userName)
 
         // Focus and fast send characters - username
         await page.focus(USR_TAG)
         await page.keyboard.sendCharacter(usr.userName)
 
-        console.log("sendCharacter :: finish")
+        console.log("sendCharacter :: finish :: ", usr.userName)
         // Next step of flow
         await page.click(NEXT_TAG)
         await delay(DELAY_TIME)
 
-        console.log("click NEXT_TAG :: finish");
+        console.log("click NEXT_TAG :: finish :: ", usr.userName);
     } catch (e){
         errorTail += `Error: ${e} - In account: ${usr.userName}\n`
         console.log("errorTail: ", errorTail)

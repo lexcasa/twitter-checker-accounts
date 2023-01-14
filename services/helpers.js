@@ -181,12 +181,6 @@ exports.processLine = async function ({line, lap}){
         await page.goto(TWT_LOGIN, {waitUntil: 'networkidle2'})
         console.log("GoTo login :: finish")
 
-        await page.waitForNavigation({
-            waitUntil: 'networkidle2',
-        })
-
-        console.log("waitForNavigation :: finish")
-
         await delay(DELAY_TIME)
         // Wait for selector visible
         await page.waitForSelector(USR_TAG, {

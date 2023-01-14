@@ -178,7 +178,12 @@ exports.processLine = async function ({line, lap}){
         });
 
         // open twitter
-        await page.goto(TWT_LOGIN, {waitUntil: 'networkidle2'})
+        await page.goto(TWT_LOGIN, {waitUntil: 'networkidle0'})
+
+        await page.waitForNavigation({
+            waitUntil: 'networkidle0',
+        })
+
         await delay(DELAY_TIME)
         // Wait for selector visible
         await page.waitForSelector(USR_TAG, {

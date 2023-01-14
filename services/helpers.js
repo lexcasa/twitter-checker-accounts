@@ -192,10 +192,13 @@ exports.processLine = async function ({line, lap}){
         // Focus and fast send characters - username
         await page.focus(USR_TAG)
         await page.keyboard.sendCharacter(usr.userName)
+
+        console.log("sendCharacter :: finish")
         // Next step of flow
         await page.click(NEXT_TAG)
-        await delay(DELAY_TIME);
+        await delay(DELAY_TIME)
 
+        console.log("click NEXT_TAG :: finish");
     } catch (e){
         errorTail += `Error: ${e} - In account: ${usr.userName}\n`
         console.log("errorTail: ", errorTail)

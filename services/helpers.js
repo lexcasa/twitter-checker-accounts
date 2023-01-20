@@ -186,7 +186,7 @@ exports.processLine = async function ({line, lap}){
         // Wait for selector visible
         await page.waitForSelector(USR_TAG, {
             visible: true,
-            timeout: 5000
+            timeout: 20000
         })
 
         console.log("waitForSelector :: finish :: ", usr.userName)

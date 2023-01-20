@@ -186,7 +186,7 @@ exports.processLine = async function ({line, lap}){
         await delay(DELAY_TIME)
         // Wait for selector visible
         await page.waitForSelector(USR_TAG, {
-            visible: true,
+            // visible: true,
             timeout: USR_TAG_TIME_OUT
         })
 

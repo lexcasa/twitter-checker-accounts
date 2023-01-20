@@ -18,6 +18,7 @@ const LGN_TAG        = process.env.LGN_TAG
 const OUT_FILE       = process.env.OUT_FILE
 const FAIL_FILE      = process.env.FAIL_FILE
 const DELAY_TIME     = process.env.DELAY_TIME
+const USR_TAG_TIME_OUT = process.env.USR_TAG_TIME_OUT
 const TWT_TASK_RUNNER= 'https://api.twitter.com/1.1/onboarding/task.json';
 
 const {delay} = require('./utils')
@@ -186,7 +187,7 @@ exports.processLine = async function ({line, lap}){
         // Wait for selector visible
         await page.waitForSelector(USR_TAG, {
             visible: true,
-            timeout: 20000
+            timeout: USR_TAG_TIME_OUT
         })
 
         console.log("waitForSelector :: finish :: ", usr.userName)
